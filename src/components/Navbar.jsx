@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wrench, PlusCircle, ShieldCheck, Scale, User, HardHat, TrendingDown, Layers } from 'lucide-react';
+import { Wrench as WrenchIcon, PlusCircle, ShieldCheck, Scale, User, HardHat, TrendingDown, Layers } from 'lucide-react';
 
 export default function Navbar({
   userRole,
@@ -21,11 +21,11 @@ export default function Navbar({
             className="flex items-center gap-2.5 cursor-pointer group"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-amber-400 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-              <Wrench className="w-5 h-5 stroke-[2.5]" />
+              <WrenchIcon className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-black text-xl tracking-tight text-white font-mono">BIDSMITH</span>
+                <span className="font-black text-xl tracking-tight text-white font-mono uppercase">WRENCH</span>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                   Fair Bid
                 </span>

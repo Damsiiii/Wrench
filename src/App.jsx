@@ -115,7 +115,7 @@ export default function App() {
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-white font-black text-lg font-mono">
               <Zap className="w-5 h-5 text-indigo-400" />
-              <span>BIDSMITH</span>
+              <span>WRENCH</span>
             </div>
             <p className="text-slate-400 leading-relaxed">
               The reverse-bidding marketplace for home micro-services. Homeowners post tasks; verified contractors submit itemized bids benchmarked against real-time local averages.
@@ -145,7 +145,7 @@ export default function App() {
           <div className="space-y-3">
             <h4 className="text-white font-bold uppercase tracking-wider text-[11px]">Fair Bid Guarantee</h4>
             <p className="text-slate-400 leading-relaxed">
-              Got a questionable quote from an offline contractor? Post it on Bidsmith to receive itemized competitive bids.
+              Got a questionable quote from an offline contractor? Post it on Wrench to receive itemized competitive bids.
             </p>
             <button
               onClick={() => setIsPostJobOpen(true)}
@@ -159,7 +159,7 @@ export default function App() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px]">
-          © {new Date().getFullYear()} Bidsmith Reverse-Bidding Marketplace Inc. All rights reserved.
+          © {new Date().getFullYear()} Wrench Reverse-Bidding Marketplace Inc. All rights reserved.
         </div>
       </footer>
 
