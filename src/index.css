@@ -2,197 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer utilities {
-  /* Claymorphic Card Surface */
-  .clay-card {
-    background-color: #f8fafc;
-    border-radius: 1.75rem;
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    box-shadow:
-      inset 0 3px 6px rgba(255, 255, 255, 0.9),
-      inset 0 -4px 8px rgba(148, 163, 184, 0.25),
-      0 12px 28px -6px rgba(100, 116, 139, 0.15);
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .clay-card-hover:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      inset 0 4px 8px rgba(255, 255, 255, 0.95),
-      inset 0 -5px 10px rgba(148, 163, 184, 0.3),
-      0 18px 36px -8px rgba(100, 116, 139, 0.22);
-  }
-
-  /* Pastel Surface Swatches */
-  .clay-surface-indigo {
-    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-    border: 2px solid rgba(255, 255, 255, 0.85);
-    box-shadow:
-      inset 0 3px 6px rgba(255, 255, 255, 0.9),
-      inset 0 -4px 8px rgba(99, 102, 241, 0.25),
-      0 10px 24px rgba(99, 102, 241, 0.15);
-  }
-
-  .clay-surface-amber {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    border: 2px solid rgba(255, 255, 255, 0.85);
-    box-shadow:
-      inset 0 3px 6px rgba(255, 255, 255, 0.9),
-      inset 0 -4px 8px rgba(245, 158, 11, 0.25),
-      0 10px 24px rgba(245, 158, 11, 0.15);
-  }
-
-  .clay-surface-emerald {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-    border: 2px solid rgba(255, 255, 255, 0.85);
-    box-shadow:
-      inset 0 3px 6px rgba(255, 255, 255, 0.9),
-      inset 0 -4px 8px rgba(16, 185, 129, 0.25),
-      0 10px 24px rgba(16, 185, 129, 0.15);
-  }
-
-  .clay-surface-rose {
-    background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
-    border: 2px solid rgba(255, 255, 255, 0.85);
-    box-shadow:
-      inset 0 3px 6px rgba(255, 255, 255, 0.9),
-      inset 0 -4px 8px rgba(244, 63, 94, 0.25),
-      0 10px 24px rgba(244, 63, 94, 0.15);
-  }
-
-  .clay-surface-sky {
-    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-    border: 2px solid rgba(255, 255, 255, 0.85);
-    box-shadow:
-      inset 0 3px 6px rgba(255, 255, 255, 0.9),
-      inset 0 -4px 8px rgba(14, 165, 233, 0.25),
-      0 10px 24px rgba(14, 165, 233, 0.15);
-  }
-
-  /* Claymorphic Interactive Buttons */
-  .clay-button-primary {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    color: #ffffff;
-    font-weight: 800;
-    border-radius: 1.25rem;
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    box-shadow:
-      inset 0 3px 5px rgba(255, 255, 255, 0.5),
-      inset 0 -4px 6px rgba(30, 27, 75, 0.35),
-      0 8px 20px rgba(79, 70, 229, 0.3);
-    transition: all 0.15s ease-out;
-  }
-
-  .clay-button-primary:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      inset 0 4px 6px rgba(255, 255, 255, 0.6),
-      inset 0 -5px 8px rgba(30, 27, 75, 0.4),
-      0 12px 24px rgba(79, 70, 229, 0.38);
-  }
-
-  .clay-button-primary:active {
-    transform: translateY(1px);
-    box-shadow:
-      inset 0 4px 8px rgba(0, 0, 0, 0.3),
-      inset 0 -1px 2px rgba(255, 255, 255, 0.2),
-      0 2px 6px rgba(79, 70, 229, 0.2);
-  }
-
-  .clay-button-amber {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: #ffffff;
-    font-weight: 800;
-    border-radius: 1.25rem;
-    border: 2px solid rgba(255, 255, 255, 0.45);
-    box-shadow:
-      inset 0 3px 5px rgba(255, 255, 255, 0.55),
-      inset 0 -4px 6px rgba(120, 53, 15, 0.35),
-      0 8px 20px rgba(217, 119, 6, 0.3);
-    transition: all 0.15s ease-out;
-  }
-
-  .clay-button-amber:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      inset 0 4px 6px rgba(255, 255, 255, 0.65),
-      inset 0 -5px 8px rgba(120, 53, 15, 0.4),
-      0 12px 24px rgba(217, 119, 6, 0.38);
-  }
-
-  .clay-button-amber:active {
-    transform: translateY(1px);
-    box-shadow:
-      inset 0 4px 8px rgba(0, 0, 0, 0.35),
-      0 2px 6px rgba(217, 119, 6, 0.2);
-  }
-
-  .clay-button-secondary {
-    background: #f1f5f9;
-    color: #334155;
-    font-weight: 700;
-    border-radius: 1.25rem;
-    border: 2px solid #ffffff;
-    box-shadow:
-      inset 0 2px 4px rgba(255, 255, 255, 0.9),
-      inset 0 -3px 5px rgba(148, 163, 184, 0.3),
-      0 6px 16px rgba(148, 163, 184, 0.2);
-    transition: all 0.15s ease-out;
-  }
-
-  .clay-button-secondary:hover {
-    background: #e2e8f0;
-    transform: translateY(-1px);
-  }
-
-  .clay-button-secondary:active {
-    transform: translateY(1px);
-    box-shadow: inset 0 3px 6px rgba(100, 116, 139, 0.25);
-  }
-
-  /* Form Input Soft Inset Shadows */
-  .clay-input {
-    background-color: #f8fafc;
-    border: 2px solid #cbd5e1;
-    border-radius: 1.25rem;
-    box-shadow:
-      inset 0 2px 4px rgba(148, 163, 184, 0.25),
-      0 1px 2px rgba(255, 255, 255, 0.8);
-    transition: all 0.2s ease;
-  }
-
-  .clay-input:focus {
-    outline: none;
-    border-color: #6366f1;
-    box-shadow:
-      inset 0 2px 4px rgba(99, 102, 241, 0.15),
-      0 0 0 4px rgba(99, 102, 241, 0.2);
-  }
-
-  /* State Tokens */
-  .clay-disabled {
-    opacity: 0.55;
-    pointer-events: none;
-    box-shadow: none !important;
-    filter: grayscale(40%);
-  }
-
-  .clay-error {
-    border-color: #f43f5e !important;
-    box-shadow:
-      inset 0 2px 4px rgba(244, 63, 94, 0.2),
-      0 0 0 4px rgba(244, 63, 94, 0.2) !important;
+@layer base {
+  body {
+    @apply font-sans bg-[#fbfcfc] text-slate-900 antialiased;
   }
 }
 
-/* Reduced Motion Override */
-@media (prefers-reduced-motion: reduce) {
-  .clay-card,
-  .clay-card-hover,
-  .clay-button-primary,
-  .clay-button-amber,
-  .clay-button-secondary {
-    transition: none !important;
-    transform: none !important;
-  }
+/* Custom UI Utilities matching Wrench Design System */
+.btn-primary {
+  @apply bg-[#008272] hover:bg-[#007163] text-white font-semibold rounded-lg px-4 py-2.5 transition-all duration-150 inline-flex items-center justify-center gap-2 active:scale-[0.99] shadow-sm;
+}
+
+.btn-secondary {
+  @apply bg-white hover:bg-slate-50 text-slate-900 font-semibold rounded-lg px-4 py-2.5 border border-slate-300 transition-all duration-150 inline-flex items-center justify-center gap-2 active:scale-[0.99] shadow-sm;
+}
+
+.btn-dark {
+  @apply bg-[#111827] hover:bg-slate-800 text-white font-semibold rounded-lg px-5 py-3 transition-all duration-150 inline-flex items-center justify-center gap-2 active:scale-[0.99] shadow-sm;
+}
+
+.btn-outline-teal {
+  @apply bg-white hover:bg-brand-50 text-[#008272] border border-[#008272] font-semibold rounded-lg px-4 py-2.5 transition-all duration-150 inline-flex items-center justify-center gap-2 active:scale-[0.99];
+}
+
+.badge-open {
+  @apply bg-[#e6f7f5] text-[#008272] text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5;
+}
+
+.badge-progress {
+  @apply bg-[#fef3c7] text-[#92400e] text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5;
+}
+
+.badge-completed {
+  @apply bg-[#d1fae5] text-[#065f46] text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5;
+}
+
+.badge-pending {
+  @apply bg-[#ffedd5] text-[#9a3412] text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5;
+}
+
+.badge-neutral {
+  @apply bg-[#f1f5f9] text-[#64748b] text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5;
+}
+
+/* Custom Scrollbar for Smooth UX */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
