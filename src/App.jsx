@@ -7,13 +7,19 @@ import PostJobModal from './components/PostJobModal';
 import PlaceBidModal from './components/PlaceBidModal';
 import MarketPriceGuide from './components/MarketPriceGuide';
 
+// New Pages
+import MyJobsDashboard from './components/MyJobsDashboard';
+import ContractorsDirectory from './components/ContractorsDirectory';
+import HowItWorks from './components/HowItWorks';
+import JoinAsProPage from './components/JoinAsProPage';
+
 import { INITIAL_JOBS } from './data/mockData';
 import { ShieldCheck, Scale, Zap, PhoneCall, HelpCircle } from 'lucide-react';
 
 export default function App() {
-  // User Mode & Navigation
+  // User Mode & Navigation State
   const [userRole, setUserRole] = useState('homeowner'); // 'homeowner' | 'contractor'
-  const [activeTab, setActiveTab] = useState('feed');
+  const [activeTab, setActiveTab] = useState('feed'); // 'feed' | 'my_jobs' | 'directory' | 'how_it_works' | 'join_pro'
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   // Job Data
@@ -28,6 +34,7 @@ export default function App() {
   // Handlers
   const handleCreateJob = (newJob) => {
     setJobs((prev) => [newJob, ...prev]);
+    setActiveTab('my_jobs');
   };
 
   const handleSubmitBid = (jobId, newBid) => {
@@ -43,7 +50,6 @@ export default function App() {
       })
     );
 
-    // Update selected job detail modal if open
     if (selectedJobDetail && selectedJobDetail.id === jobId) {
       setSelectedJobDetail((prev) => ({
         ...prev,
@@ -89,27 +95,55 @@ export default function App() {
         jobCount={jobs.length}
       />
 
-      {/* Main Content */}
+      {/* Main Content Router */}
       <main className="flex-1">
-        {/* Hero Section */}
-        <HeroSection
-          onOpenPostJob={() => setIsPostJobOpen(true)}
-          onOpenMarketGuide={() => setIsMarketGuideOpen(true)}
-        />
+        {activeTab === 'feed' && (
+          <>
+            <HeroSection
+              onOpenPostJob={() => setIsPostJobOpen(true)}
+              onOpenMarketGuide={() => setIsMarketGuideOpen(true)}
+            />
+            <JobFeed
+              jobs={jobs}
+              userRole={userRole}
+              onSelectJob={(job) => setSelectedJobDetail(job)}
+              onOpenPlaceBidModal={(job) => setBidTargetJob(job)}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+          </>
+        )}
 
-        {/* Live Bidding Feed */}
-        <JobFeed
-          jobs={jobs}
-          userRole={userRole}
-          onSelectJob={(job) => setSelectedJobDetail(job)}
-          onOpenPlaceBidModal={(job) => setBidTargetJob(job)}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-        />
+        {activeTab === 'my_jobs' && (
+          <MyJobsDashboard
+            jobs={jobs}
+            onSelectJob={(job) => setSelectedJobDetail(job)}
+            onNavigateToExplore={() => setActiveTab('feed')}
+          />
+        )}
+
+        {activeTab === 'directory' && (
+          <ContractorsDirectory
+            onOpenPostJob={() => setIsPostJobOpen(true)}
+          />
+        )}
+
+        {activeTab === 'how_it_works' && (
+          <HowItWorks
+            onOpenPostJob={() => setIsPostJobOpen(true)}
+            onOpenMarketGuide={() => setIsMarketGuideOpen(true)}
+          />
+        )}
+
+        {activeTab === 'join_pro' && (
+          <JoinAsProPage
+            onNavigateToFeed={() => setActiveTab('feed')}
+          />
+        )}
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-900 border-t border-slate-800 text-slate-400 text-xs py-12">
+      <footer className="bg-slate-900 border-t border-slate-800 text-slate-400 text-xs py-12 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
 
           <div className="space-y-3">
@@ -123,12 +157,12 @@ export default function App() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold uppercase tracking-wider text-[11px] mb-3">Reverse-Bidding Trades</h4>
+            <h4 className="text-white font-bold uppercase tracking-wider text-[11px] mb-3">Marketplace Views</h4>
             <ul className="space-y-2">
-              <li className="hover:text-white cursor-pointer" onClick={() => setSelectedCategory('Electrician')}>Electrician Panel & Wiring Bids</li>
-              <li className="hover:text-white cursor-pointer" onClick={() => setSelectedCategory('Plumber')}>Emergency Plumbing & Hydro-Jetting</li>
-              <li className="hover:text-white cursor-pointer" onClick={() => setSelectedCategory('Handyman')}>IKEA Furniture & Mounting</li>
-              <li className="hover:text-white cursor-pointer" onClick={() => setSelectedCategory('HVAC Tech')}>HVAC & AC Compressor Service</li>
+              <li className="hover:text-white cursor-pointer" onClick={() => setActiveTab('feed')}>Live Job Bidding Feed</li>
+              <li className="hover:text-white cursor-pointer" onClick={() => setActiveTab('my_jobs')}>My Jobs Dashboard</li>
+              <li className="hover:text-white cursor-pointer" onClick={() => setActiveTab('directory')}>Verified Contractors Directory</li>
+              <li className="hover:text-white cursor-pointer" onClick={() => setActiveTab('how_it_works')}>How Reverse-Bidding Works</li>
             </ul>
           </div>
 

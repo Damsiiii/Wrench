@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wrench as WrenchIcon, PlusCircle, ShieldCheck, Scale, User, HardHat, TrendingDown, Layers } from 'lucide-react';
+import { Wrench as WrenchIcon, PlusCircle, Scale, User, HardHat, TrendingDown, Layers, Users, BookOpen, Briefcase } from 'lucide-react';
 
 export default function Navbar({
   userRole,
@@ -15,7 +15,7 @@ export default function Navbar({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
 
         {/* Brand Logo & Name */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6">
           <div
             onClick={() => setActiveTab('feed')}
             className="flex items-center gap-2.5 cursor-pointer group"
@@ -30,30 +30,66 @@ export default function Navbar({
                   Fair Bid
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 hidden sm:block">Reverse-Bidding & Fair-Price Benchmark Engine</p>
+              <p className="text-[11px] text-slate-400 hidden lg:block">Reverse-Bidding & Price Benchmark Engine</p>
             </div>
           </div>
 
-          {/* Navigation Tabs */}
+          {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/60 text-xs font-semibold">
             <button
               onClick={() => setActiveTab('feed')}
-              className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
                 activeTab === 'feed'
                   ? 'bg-indigo-600 text-white shadow-sm'
                   : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Live Job Feed ({jobCount})</span>
+              <span>Jobs Feed ({jobCount})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('my_jobs')}
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                activeTab === 'my_jobs'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+              }`}
+            >
+              <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
+              <span>My Jobs</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('directory')}
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                activeTab === 'directory'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5 text-indigo-300" />
+              <span>Pros Directory</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('how_it_works')}
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                activeTab === 'how_it_works'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5 text-sky-400" />
+              <span>How It Works</span>
             </button>
 
             <button
               onClick={onOpenMarketGuide}
-              className="px-3.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all flex items-center gap-2"
+              className="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all flex items-center gap-1.5"
             >
               <Scale className="w-3.5 h-3.5 text-amber-400" />
-              <span>Average Price Guide</span>
+              <span>Price Guide</span>
             </button>
           </nav>
         </div>
@@ -96,10 +132,13 @@ export default function Navbar({
               <span>Post a Job for Bids</span>
             </button>
           ) : (
-            <div className="px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl text-xs font-semibold flex items-center gap-1.5">
-              <TrendingDown className="w-3.5 h-3.5 text-amber-400" />
-              <span>Bidding Mode Active</span>
-            </div>
+            <button
+              onClick={() => setActiveTab('join_pro')}
+              className="px-3.5 py-1.5 bg-amber-500 text-slate-950 font-extrabold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/20"
+            >
+              <HardHat className="w-3.5 h-3.5" />
+              <span>Join Pro Network</span>
+            </button>
           )}
         </div>
 
