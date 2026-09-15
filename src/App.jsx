@@ -82,7 +82,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 font-sans text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-slate-100 font-sans text-slate-900 antialiased selection:bg-indigo-500 selection:text-white">
 
       {/* Top Header */}
       <Navbar
@@ -143,47 +143,47 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-900 border-t border-slate-800 text-slate-400 text-xs py-12 mt-12">
+      <footer className="bg-slate-200 border-t-2 border-slate-300 text-slate-600 text-xs py-12 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
 
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-white font-black text-lg font-mono">
-              <Zap className="w-5 h-5 text-indigo-400" />
+            <div className="flex items-center gap-2 text-slate-900 font-black text-lg font-mono uppercase">
+              <Zap className="w-5 h-5 text-indigo-600" />
               <span>WRENCH</span>
             </div>
-            <p className="text-slate-400 leading-relaxed">
-              The reverse-bidding marketplace for home micro-services. Homeowners post tasks; verified contractors submit itemized bids benchmarked against real-time local averages.
+            <p className="text-slate-600 font-medium leading-relaxed">
+              The Claymorphic reverse-bidding marketplace for home micro-services. Homeowners post tasks; verified contractors submit itemized bids benchmarked against real-time local averages.
             </p>
           </div>
 
           <div>
-            <h4 className="text-white font-bold uppercase tracking-wider text-[11px] mb-3">Marketplace Views</h4>
-            <ul className="space-y-2">
-              <li className="hover:text-white cursor-pointer" onClick={() => setActiveTab('feed')}>Live Job Bidding Feed</li>
-              <li className="hover:text-white cursor-pointer" onClick={() => setActiveTab('my_jobs')}>My Jobs Dashboard</li>
-              <li className="hover:text-white cursor-pointer" onClick={() => setActiveTab('directory')}>Verified Contractors Directory</li>
-              <li className="hover:text-white cursor-pointer" onClick={() => setActiveTab('how_it_works')}>How Reverse-Bidding Works</li>
+            <h4 className="text-slate-900 font-black uppercase tracking-wider text-[11px] mb-3">Marketplace Views</h4>
+            <ul className="space-y-2 font-bold text-slate-600">
+              <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setActiveTab('feed')}>Live Job Bidding Feed</li>
+              <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setActiveTab('my_jobs')}>My Jobs Dashboard</li>
+              <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setActiveTab('directory')}>Verified Contractors Directory</li>
+              <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setActiveTab('how_it_works')}>How Reverse-Bidding Works</li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-white font-bold uppercase tracking-wider text-[11px] mb-3">Price Reasonableness Engine</h4>
-            <ul className="space-y-2">
-              <li className="hover:text-white cursor-pointer" onClick={() => setIsMarketGuideOpen(true)}>National Electrical Code (NEC) Benchmarks</li>
-              <li className="hover:text-white cursor-pointer" onClick={() => setIsMarketGuideOpen(true)}>Plumbing Labor & Equipment Standards</li>
-              <li className="hover:text-white cursor-pointer" onClick={() => setIsMarketGuideOpen(true)}>Material & Callout Fee Itemization</li>
-              <li className="hover:text-white cursor-pointer" onClick={() => setIsMarketGuideOpen(true)}>Contractor Licensing Guarantee</li>
+            <h4 className="text-slate-900 font-black uppercase tracking-wider text-[11px] mb-3">Price Reasonableness Engine</h4>
+            <ul className="space-y-2 font-bold text-slate-600">
+              <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setIsMarketGuideOpen(true)}>National Electrical Code (NEC) Benchmarks</li>
+              <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setIsMarketGuideOpen(true)}>Plumbing Labor & Equipment Standards</li>
+              <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setIsMarketGuideOpen(true)}>Material & Callout Fee Itemization</li>
+              <li className="hover:text-indigo-600 cursor-pointer" onClick={() => setIsMarketGuideOpen(true)}>Contractor Licensing Guarantee</li>
             </ul>
           </div>
 
           <div className="space-y-3">
-            <h4 className="text-white font-bold uppercase tracking-wider text-[11px]">Fair Bid Guarantee</h4>
-            <p className="text-slate-400 leading-relaxed">
+            <h4 className="text-slate-900 font-black uppercase tracking-wider text-[11px]">Fair Bid Guarantee</h4>
+            <p className="text-slate-600 font-medium leading-relaxed">
               Got a questionable quote from an offline contractor? Post it on Wrench to receive itemized competitive bids.
             </p>
             <button
               onClick={() => setIsPostJobOpen(true)}
-              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold rounded-xl transition-colors flex items-center gap-2 shadow-md shadow-indigo-600/20"
+              className="clay-button-primary px-4 py-2.5 text-xs flex items-center gap-2"
             >
               <Scale className="w-4 h-4 text-amber-300" />
               <span>Post Job For Bids</span>
@@ -192,8 +192,8 @@ export default function App() {
 
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px]">
-          © {new Date().getFullYear()} Wrench Reverse-Bidding Marketplace Inc. All rights reserved.
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 pt-6 border-t border-slate-300 text-center text-slate-500 text-[11px] font-bold">
+          © {new Date().getFullYear()} Wrench Claymorphic Service Marketplace Inc. All rights reserved.
         </div>
       </footer>
 
