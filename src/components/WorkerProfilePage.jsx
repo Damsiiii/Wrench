@@ -11,16 +11,17 @@ import {
   ShieldCheck,
   CheckCircle2
 } from 'lucide-react';
-import { INITIAL_WORKERS } from '../data/mockData';
+
 
 export default function WorkerProfilePage({
-  workerId = 'w-1',
+  workers = [], workerId,
   onInviteToQuote,
   onOpenMessages
 }) {
   const worker =
-    INITIAL_WORKERS.find((w) => w.id === workerId) || INITIAL_WORKERS[0];
+    workers.find((w) => w.id === workerId);
 
+  if (!worker) return <p className="p-8">Worker profile not found.</p>;
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Top Header Card */}
@@ -47,7 +48,7 @@ export default function WorkerProfilePage({
               <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
               <span>{worker.rating}</span>
               <span className="text-xs text-slate-400 font-normal">
-                ({worker.profileReviewsCount || 12} reviews)
+                ({worker.profileReviewsCount || 0} reviews)
               </span>
             </div>
 
@@ -177,10 +178,10 @@ export default function WorkerProfilePage({
 
           <div className="pt-2 border-t border-slate-100">
             <button
-              onClick={() => alert('Viewing all reviews.')}
+              disabled
               className="text-xs font-bold text-[#008272] hover:text-[#006357] flex items-center gap-1"
             >
-              <span>See all {worker.profileReviewsCount || 12} reviews</span>
+              <span>{worker.profileReviewsCount || 0} reviews shown</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

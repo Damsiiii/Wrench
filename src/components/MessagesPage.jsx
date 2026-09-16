@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Paperclip,
   Send,
@@ -9,46 +9,17 @@ import {
   Wrench,
   ChevronRight
 } from 'lucide-react';
-import { INITIAL_CONVERSATIONS } from '../data/mockData';
+
 
 export default function MessagesPage({
-  onViewWorkerProfile
+  conversations = [], initialConversationId, onSend, onViewWorkerProfile
 }) {
-  const [conversations, setConversations] = useState(INITIAL_CONVERSATIONS);
-  const [activeConvId, setActiveConvId] = useState('conv-1');
-  const [inputMessage, setInputMessage] = useState('');
-
-  const activeConv =
-    conversations.find((c) => c.id === activeConvId) || conversations[0];
-
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!inputMessage.trim()) return;
-
-    const newMsg = {
-      id: `m-${Date.now()}`,
-      sender: 'customer',
-      text: inputMessage,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      status: 'sent'
-    };
-
-    setConversations(
-      conversations.map((c) => {
-        if (c.id === activeConvId) {
-          return {
-            ...c,
-            lastMessage: inputMessage,
-            lastTime: 'Just now',
-            messages: [...c.messages, newMsg]
-          };
-        }
-        return c;
-      })
-    );
-
-    setInputMessage('');
-  };
+  const [activeConvId,setActiveConvId]=useState(initialConversationId);
+  const [inputMessage,setInputMessage]=useState('');
+  useEffect(()=>{if(initialConversationId)setActiveConvId(initialConversationId)},[initialConversationId]);
+  const activeConv=conversations.find(c=>c.id===activeConvId)||conversations[0];
+  const handleSendMessage=async e=>{e.preventDefault();if(inputMessage.trim()&&await onSend(activeConv.id,inputMessage.trim()))setInputMessage('')};
+  if(!activeConv)return <div className="max-w-6xl mx-auto p-8"><h1 className="text-3xl font-bold mb-5">Messages</h1><p>No conversations yet. Start a conversation from a job quote.</p></div>;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -65,7 +36,7 @@ export default function MessagesPage({
         {/* Left Column: Conversations List */}
         <div className="border-r border-slate-200 divide-y divide-slate-100 overflow-y-auto">
           {conversations.map((conv) => {
-            const isSelected = conv.id === activeConvId;
+            const isSelected = conv.id === activeConv.id;
             return (
               <div
                 key={conv.id}
@@ -177,12 +148,12 @@ export default function MessagesPage({
             {/* Date separator */}
             <div className="text-center my-2">
               <span className="text-[10px] text-slate-400 font-semibold bg-slate-200/60 px-3 py-1 rounded-full">
-                18 Sep 2026
+                Conversation history
               </span>
             </div>
 
             {activeConv.messages.map((msg) => {
-              const isMe = msg.sender === 'customer';
+              const isMe = msg.sender === 'me';
               return (
                 <div
                   key={msg.id}
@@ -208,7 +179,7 @@ export default function MessagesPage({
                       }`}
                     >
                       <span>{msg.time}</span>
-                      {isMe && <CheckCheck className="w-3.5 h-3.5 text-[#008272]" />}
+                      {isMe && <Check className="w-3.5 h-3.5 text-[#008272]" />}
                     </div>
                   </div>
                 </div>
@@ -221,17 +192,11 @@ export default function MessagesPage({
             onSubmit={handleSendMessage}
             className="p-3 bg-white border-t border-slate-200 flex items-center gap-3"
           >
-            <button
-              type="button"
-              onClick={() => alert('Attachments dialog opened.')}
-              className="p-2 text-slate-400 hover:text-slate-700 transition-colors"
-            >
-              <Paperclip className="w-5 h-5" />
-            </button>
+
 
             <input
               type="text"
-              value={inputMessage}
+              maxLength={3000} value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder="Type a message..."
               className="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-[#008272] focus:outline-none"

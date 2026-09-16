@@ -18,28 +18,12 @@ export default function JobDetailView({
   onOpenSendQuote,
   onOpenMessages,
   userRole = 'worker',
-  onAddQuestion
+  currentUser, onSaveJob, onAddQuestion
 }) {
-  const [saved, setSaved] = useState(false);
-  const [newQuestionText, setNewQuestionText] = useState('');
-  const [questions, setQuestions] = useState(job.questions || []);
-
-  const handlePostQuestion = (e) => {
-    e.preventDefault();
-    if (!newQuestionText.trim()) return;
-
-    const newQ = {
-      id: `q-${Date.now()}`,
-      asker: userRole === 'worker' ? 'Saman Kumara' : 'You',
-      time: 'Just now',
-      text: newQuestionText,
-      reply: null
-    };
-
-    setQuestions([...questions, newQ]);
-    if (onAddQuestion) onAddQuestion(job.id, newQ);
-    setNewQuestionText('');
-  };
+  const saved=job.saved;
+  const questions=job.questions||[];
+  const [newQuestionText,setNewQuestionText]=useState('');
+  const handlePostQuestion=async e=>{e.preventDefault();if(newQuestionText.trim()&&await onAddQuestion(job.id,{text:newQuestionText.trim()}))setNewQuestionText('')};
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -60,7 +44,7 @@ export default function JobDetailView({
           <div className="space-y-2">
             <div>
               <span className="bg-[#e6f7f5] text-[#008272] text-xs font-bold px-3 py-1 rounded-full inline-flex items-center">
-                {job.status === 'open' ? 'Open' : job.status === 'in_progress' ? 'In progress' : 'Completed'}
+                {job.status === 'open' ? 'Open' : job.status === 'in_progress' ? 'In progress' : job.status === 'cancelled' ? 'Cancelled' : 'Completed'}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -162,7 +146,7 @@ export default function JobDetailView({
 
             <div className="space-y-2.5">
               <button
-                onClick={() => onOpenSendQuote(job)}
+                disabled={job.status!=='open'||currentUser?.id===job.customer_id} onClick={() => onOpenSendQuote(job)}
                 className="w-full bg-[#008272] hover:bg-[#007163] text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <span>Send a quote</span>
@@ -170,7 +154,7 @@ export default function JobDetailView({
               </button>
 
               <button
-                onClick={() => setSaved(!saved)}
+                onClick={() => onSaveJob(!saved)}
                 className="w-full bg-white hover:bg-slate-50 text-slate-800 font-semibold py-2.5 px-4 rounded-xl border border-slate-300 flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <Heart
@@ -191,7 +175,7 @@ export default function JobDetailView({
                   <span>Member since {job.customer.memberSince}</span>
                   <span>•</span>
                   <span className="text-[#008272] font-semibold flex items-center gap-0.5">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Identity verified
+                    <ShieldCheck className="w-3.5 h-3.5" /> Member
                   </span>
                 </div>
               </div>
@@ -258,7 +242,7 @@ export default function JobDetailView({
         <form onSubmit={handlePostQuestion} className="flex gap-2 pt-2">
           <input
             type="text"
-            value={newQuestionText}
+            maxLength={1000} value={newQuestionText}
             onChange={(e) => setNewQuestionText(e.target.value)}
             placeholder="Ask a question about this job..."
             className="flex-1 border border-slate-300 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#008272]"

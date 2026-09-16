@@ -32,7 +32,7 @@ export default function FindWorkPage({
     // town filter
     if (currentTown && currentTown !== 'All' && job.town !== currentTown) {
       // let it pass if search query matches
-      if (!searchQuery) return false;
+      return false;
     }
     // category filter
     if (selectedCategory !== 'all' && job.tradeCategory !== selectedCategory) {
@@ -52,7 +52,7 @@ export default function FindWorkPage({
       if (!matchTitle && !matchDesc && !matchCat && !matchTown) return false;
     }
     return true;
-  });
+  }).sort((a,b)=>sortBy==='budget_high'?b.budget-a.budget:sortBy==='budget_low'?a.budget-b.budget:(b.created_at||'').localeCompare(a.created_at||''));
 
   const getCategoryIcon = (id) => {
     switch (id) {

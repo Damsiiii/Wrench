@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   ArrowLeft,
   MapPin,
@@ -9,46 +9,44 @@ import {
   MessageSquare,
   Info,
   ChevronDown,
-  ChevronUp
-} from 'lucide-react';
+  ChevronUp,
+} from "lucide-react";
 
-export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser }) {
-  const [totalQuote, setTotalQuote] = useState('4,500');
-  const [date, setDate] = useState('18 Sep 2026');
-  const [timeOfDay, setTimeOfDay] = useState('Morning');
-  const [inclusions, setInclusions] = useState('Labour and replacement pipe fittings.');
+export default function SendQuotePage({
+  job,
+  onBack,
+  onSubmitQuote,
+  currentUser,
+}) {
+  const [totalQuote, setTotalQuote] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [timeOfDay, setTimeOfDay] = useState("Morning");
+  const [inclusions, setInclusions] = useState("");
   const [breakdownOpen, setBreakdownOpen] = useState(false);
-  const [laborPart, setLaborPart] = useState('3,000');
-  const [materialsPart, setMaterialsPart] = useState('1,500');
-  const [message, setMessage] = useState(
-    'Hi Kasun, I can fix the leaking pipe and check for any other issues. Please let me know if you have any questions.'
-  );
-
+  const [laborPart, setLaborPart] = useState("");
+  const [materialsPart, setMaterialsPart] = useState("");
+  const [message, setMessage] = useState("");
+  const [validation, setValidation] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
-    const numericAmount = parseInt(totalQuote.replace(/\D/g, '') || '0', 10);
-    const newQuote = {
-      id: `quote-${Date.now()}`,
-      workerId: currentUser?.id || 'w-1',
-      workerName: currentUser?.name || 'Saman Kumara',
-      workerRating: 4.8,
-      workerReviewsCount: 27,
-      workerTown: 'Kurunegala',
-      workerAvatar:
-        currentUser?.avatar ||
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-      amount: numericAmount,
-      availability: `Available ${date}, ${timeOfDay.toLowerCase()}`,
-      appointmentDate: `${date} (Friday)`,
-      appointmentTime: `${timeOfDay} (8.00 am - 12.00 pm)`,
+    const amount = Number(totalQuote.replaceAll(",", ""));
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0 ||
+      inclusions.trim().length < 3 ||
+      !date
+    ) {
+      setValidation("Enter a positive quote, a date, and what is included.");
+      return;
+    }
+    setValidation("");
+    onSubmitQuote(job.id, {
+      amount,
+      appointmentDate: date,
+      appointmentTime: timeOfDay,
       includes: inclusions,
-      inclusionsDetails: inclusions,
       message,
-      status: 'pending',
-      recommended: false
-    };
-
-    onSubmitQuote(job.id, newQuote);
+    });
   };
 
   return (
@@ -62,9 +60,16 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
         <span>Back to job</span>
       </button>
 
+      {validation && (
+        <p role="alert" className="text-red-700">
+          {validation}
+        </p>
+      )}
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Send a quote</h1>
+        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+          Send a quote
+        </h1>
         <p className="text-slate-600 text-sm sm:text-base mt-1">
           Tell the homeowner how you can help.
         </p>
@@ -91,12 +96,16 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
                 {job.customer.name} (Homeowner)
               </span>
             </div>
-            <p className="text-xs text-slate-600 line-clamp-1 max-w-xl">{job.description}</p>
+            <p className="text-xs text-slate-600 line-clamp-1 max-w-xl">
+              {job.description}
+            </p>
           </div>
         </div>
 
         <div className="sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 w-full sm:w-auto">
-          <div className="text-xs text-slate-500 font-medium">Budget (approx.)</div>
+          <div className="text-xs text-slate-500 font-medium">
+            Budget (approx.)
+          </div>
           <div className="text-xl font-extrabold text-[#008272]">
             Rs. {job.budget?.toLocaleString()}
           </div>
@@ -113,26 +122,33 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
           {/* Row 1: Quote Amount & Schedule */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-800">Your total quote (Rs.)</label>
+              <label className="text-xs font-bold text-slate-800">
+                Your total quote (Rs.)
+              </label>
               <input
                 type="text"
                 value={totalQuote}
-                onChange={(e) => setTotalQuote(e.target.value.replace(/[^0-9]/g, ''))}
+                onChange={(e) =>
+                  setTotalQuote(e.target.value.replace(/[^0-9]/g, ""))
+                }
                 placeholder="e.g. 4,500"
                 className="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-[#008272] focus:outline-none"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-800">When can you come?</label>
+              <label className="text-xs font-bold text-slate-800">
+                When can you come?
+              </label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-600">
                     <Calendar className="w-4 h-4" />
                   </div>
                   <input
-                    type="text"
+                    type="date"
                     value={date}
+                    required
                     onChange={(e) => setDate(e.target.value)}
                     className="w-full border border-slate-300 rounded-xl pl-9 pr-2 py-2.5 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-[#008272] focus:outline-none"
                   />
@@ -153,8 +169,12 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
           {/* Row 2: What's included */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-800">What's included?</label>
-              <span className="text-[11px] text-slate-400">{inclusions.length}/500</span>
+              <label className="text-xs font-bold text-slate-800">
+                What's included?
+              </label>
+              <span className="text-[11px] text-slate-400">
+                {inclusions.length}/500
+              </span>
             </div>
             <textarea
               rows={2}
@@ -173,12 +193,18 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
               className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors"
             >
               <span>Add labour / materials breakdown (optional)</span>
-              {breakdownOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              {breakdownOpen ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
             </button>
             {breakdownOpen && (
               <div className="p-4 bg-white grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200">
                 <div>
-                  <label className="text-xs font-medium text-slate-600">Estimated Labour (Rs.)</label>
+                  <label className="text-xs font-medium text-slate-600">
+                    Estimated Labour (Rs.)
+                  </label>
                   <input
                     type="text"
                     value={laborPart}
@@ -187,7 +213,9 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-slate-600">Estimated Materials (Rs.)</label>
+                  <label className="text-xs font-medium text-slate-600">
+                    Estimated Materials (Rs.)
+                  </label>
                   <input
                     type="text"
                     value={materialsPart}
@@ -205,7 +233,9 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
               <label className="text-xs font-bold text-slate-800">
                 A message to the homeowner (optional)
               </label>
-              <span className="text-[11px] text-slate-400">{message.length}/500</span>
+              <span className="text-[11px] text-slate-400">
+                {message.length}/500
+              </span>
             </div>
             <textarea
               rows={3}
@@ -237,8 +267,12 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
         {/* Right Column: Your quote preview (Mint Background) */}
         <div className="bg-[#e6f7f5] border border-[#cbf0ea] rounded-2xl p-6 space-y-6 shadow-sm">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">Your quote preview</h3>
-            <p className="text-xs text-slate-600 mt-0.5">This is what the homeowner will see.</p>
+            <h3 className="text-lg font-bold text-slate-900">
+              Your quote preview
+            </h3>
+            <p className="text-xs text-slate-600 mt-0.5">
+              This is what the homeowner will see.
+            </p>
           </div>
 
           {/* Preview Card */}
@@ -249,16 +283,20 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
                 SK
               </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-900">Saman Kumara</h4>
+                <h4 className="text-sm font-bold text-slate-900">
+                  {currentUser.name}
+                </h4>
                 <p className="text-xs text-slate-500">Local worker</p>
               </div>
             </div>
 
             {/* Total quote */}
             <div className="flex items-center justify-between border-t border-b border-slate-100 py-3">
-              <span className="text-xs font-bold text-slate-700">Total quote</span>
+              <span className="text-xs font-bold text-slate-700">
+                Total quote
+              </span>
               <span className="text-lg font-black text-[#008272]">
-                Rs. {totalQuote || '0'}
+                Rs. {totalQuote || "0"}
               </span>
             </div>
 
@@ -267,15 +305,21 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
               <div className="flex items-start gap-2.5">
                 <ListChecks className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold text-slate-900">What's included?</div>
-                  <div className="text-slate-600 mt-0.5">{inclusions || 'None specified'}</div>
+                  <div className="font-bold text-slate-900">
+                    What's included?
+                  </div>
+                  <div className="text-slate-600 mt-0.5">
+                    {inclusions || "None specified"}
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5">
                 <Calendar className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold text-slate-900">When can you come?</div>
+                  <div className="font-bold text-slate-900">
+                    When can you come?
+                  </div>
                   <div className="text-slate-600 mt-0.5">
                     {date}, {timeOfDay}
                   </div>
@@ -286,7 +330,9 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
                 <MessageSquare className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
                 <div>
                   <div className="font-bold text-slate-900">Message</div>
-                  <div className="text-slate-600 mt-0.5">{message || 'No message'}</div>
+                  <div className="text-slate-600 mt-0.5">
+                    {message || "No message"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -294,7 +340,10 @@ export default function SendQuotePage({ job, onBack, onSubmitQuote, currentUser 
             {/* Info note */}
             <div className="pt-3 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500">
               <Info className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
-              <span>This quote will be sent to the homeowner. You can edit or withdraw it later.</span>
+              <span>
+                This quote will be sent to the homeowner. You can edit or
+                withdraw it later.
+              </span>
             </div>
           </div>
         </div>

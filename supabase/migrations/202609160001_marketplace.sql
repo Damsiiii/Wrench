@@ -153,7 +153,13 @@ begin
  -- Serialize all lifecycle transitions, quote submissions and withdrawals per job.
  select * into j from public.jobs where id=jid for update;
  if not found then raise exception 'Job not found.'; end if;
- if command='submit_quote' then
+if command='edit_job' then
+ if j.customer_id<>uid or j.status<>'open' then raise exception 'Only the owner can edit an open job.'; end if;
+ if exists(select 1 from public.quotes where job_id=jid and status='pending') then raise exception 'This job already has quotes. Cancel it and post a corrected job instead.'; end if;
+ update public.jobs set title=trim(payload->>'title'),description=trim(payload->>'description'),category=payload->>'category',town=payload->>'town',
+ budget=nullif(nullif(payload->>'budget','')::numeric,0),timing=coalesce(payload->>'timing','Flexible'),
+ photos=array(select jsonb_array_elements_text(coalesce(payload->'photos','[]'))) where id=jid;
+ elsif command='submit_quote' then
  if j.status<>'open' or j.customer_id=uid then raise exception 'You cannot quote on this job.'; end if;
  if not exists(select 1 from public.workers where id=uid) then raise exception 'Create your worker profile first.'; end if;
  if (payload->>'appointmentDate')::date < current_date then raise exception 'Choose a date today or later.'; end if;
@@ -194,13 +200,15 @@ begin
  elsif command='save_address' then
  if j.customer_id<>uid then raise exception 'Only the customer can set the address.'; end if;
  insert into public.job_addresses values(jid,payload->>'address') on conflict(job_id) do update set address=excluded.address;
- elsif command='open_conversation' then
+ elsif command in ('open_conversation','invite_worker') then
  wid:=(payload->>'workerId')::uuid;
+ if command='invite_worker' and (uid<>j.customer_id or j.status<>'open') then raise exception 'Only the owner can invite workers to an open job.'; end if;
  if wid=j.customer_id or not exists(select 1 from public.workers where id=wid) then raise exception 'Choose a worker.'; end if;
  if uid<>j.customer_id and uid<>wid then raise exception 'Conversation not available.'; end if;
  if uid=wid and not exists(select 1 from public.quotes where job_id=jid and worker_id=uid) then raise exception 'Send a quote before messaging.'; end if;
  insert into public.conversations(job_id,customer_id,worker_id) values(jid,j.customer_id,wid)
  on conflict(job_id,worker_id) do update set job_id=excluded.job_id returning id into cid;
+ if command='invite_worker' then insert into public.messages(conversation_id,sender_id,text) values(cid,uid,'I would like to invite you to send a quote for: '||j.title); end if;
  return jsonb_build_object('id',cid);
  else raise exception 'Unknown action.';
  end if;

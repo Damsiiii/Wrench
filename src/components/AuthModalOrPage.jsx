@@ -1,46 +1,131 @@
-import React, { useState } from 'react';
-import { Mail, Lock, User, Eye, EyeOff, Home, Briefcase } from 'lucide-react';
+import { requireBackend } from "../lib/supabase";
+import { Page, Field, Button } from "./BackendForms";
+import React, { useState, useEffect } from "react";
+import { Mail, Lock, User, Eye, EyeOff, Home, Briefcase } from "lucide-react";
 
 export default function AuthModalOrPage({
-  initialMode = 'signin',
+  initialMode = "signin",
   onSuccess,
-  onCancel
+  onCancel,
 }) {
   const [mode, setMode] = useState(initialMode); // 'signin' | 'signup'
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [userIntent, setUserIntent] = useState('need_help'); // 'need_help' | 'find_work'
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [userIntent, setUserIntent] = useState("need_help"); // 'need_help' | 'find_work'
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e) => {
+  const [notice, setNotice] = useState("");
+  const [busy, setBusy] = useState(false);
+  useEffect(() => setMode(initialMode), [initialMode]);
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (onSuccess) {
-      onSuccess({
-        email: email || 'kasun.perera@gmail.com',
-        name: fullName || 'Kasun Perera',
-        role: userIntent === 'need_help' ? 'customer' : 'worker'
-      });
+    setBusy(true);
+    setNotice("");
+    try {
+      const auth = requireBackend().auth;
+      const result =
+        mode === "signup"
+          ? await auth.signUp({
+              email,
+              password,
+              options: {
+                data: { name: fullName },
+                emailRedirectTo: location.origin + location.pathname,
+              },
+            })
+          : mode === "recovery"
+            ? await auth.updateUser({ password })
+            : await auth.signInWithPassword({ email, password });
+      if (result.error) throw result.error;
+      if (mode === "signup" && !result.data.session)
+        setNotice("Check your email to confirm your account, then sign in.");
+      else
+        onSuccess({ role: userIntent === "find_work" ? "worker" : "customer" });
+    } catch (e) {
+      setNotice(e.message);
+    } finally {
+      setBusy(false);
     }
-  };
+  }
+  async function resetPassword() {
+    if (!email.trim()) {
+      setNotice("Enter your email address first.");
+      return;
+    }
+    setBusy(true);
+    setNotice("");
+    try {
+      const { error } = await requireBackend().auth.resetPasswordForEmail(
+        email,
+        { redirectTo: location.origin + location.pathname },
+      );
+      if (error) throw error;
+      setNotice("Check your email for a password reset link.");
+    } catch (e) {
+      setNotice(e.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function googleSignIn() {
+    setBusy(true);
+    try {
+      const { error } = await requireBackend().auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: location.origin + location.pathname },
+      });
+      if (error) throw error;
+    } catch (e) {
+      setNotice(e.message);
+      setBusy(false);
+    }
+  }
+  if (mode === "recovery")
+    return (
+      <Page title="Choose a new password">
+        <form onSubmit={handleSubmit}>
+          <Field
+            label="New password"
+            type="password"
+            minLength={8}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button disabled={busy}>Save password</Button>
+          {notice && <p role="status">{notice}</p>}
+        </form>
+      </Page>
+    );
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-12">
+    <fieldset disabled={busy} className="max-w-xl mx-auto px-4 py-12">
+      {notice && (
+        <p role="status" className="mb-4 p-3 bg-teal-50 rounded-xl">
+          {notice}
+        </p>
+      )}
+      {busy && <p role="status">Please wait…</p>}
       {/* Tab Switcher at top for seamless testing */}
       <div className="flex items-center justify-center mb-6">
         <div className="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200">
           <button
-            onClick={() => setMode('signin')}
+            onClick={() => setMode("signin")}
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-              mode === 'signin' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+              mode === "signin"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
             }`}
           >
             Sign in
           </button>
           <button
-            onClick={() => setMode('signup')}
+            onClick={() => setMode("signup")}
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-              mode === 'signup' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+              mode === "signup"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
             }`}
           >
             Create account
@@ -49,7 +134,7 @@ export default function AuthModalOrPage({
       </div>
 
       <div className="bg-white border border-slate-200 rounded-3xl p-7 sm:p-10 shadow-sm space-y-6">
-        {mode === 'signin' ? (
+        {mode === "signin" ? (
           /* Sign In Form */
           <>
             <div className="text-center space-y-1">
@@ -63,13 +148,16 @@ export default function AuthModalOrPage({
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-800">Email</label>
+                <label className="text-xs font-bold text-slate-800">
+                  Email
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                     <Mail className="w-4 h-4" />
                   </div>
                   <input
                     type="email"
+                    required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
@@ -80,13 +168,15 @@ export default function AuthModalOrPage({
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-800">Password</label>
+                  <label className="text-xs font-bold text-slate-800">
+                    Password
+                  </label>
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="text-xs font-semibold text-slate-500 hover:text-slate-800"
                   >
-                    {showPassword ? 'Hide' : 'Show'}
+                    {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
                 <div className="relative">
@@ -94,7 +184,9 @@ export default function AuthModalOrPage({
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
+                    required
+                    minLength={8}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
@@ -104,7 +196,7 @@ export default function AuthModalOrPage({
                 <div className="text-right pt-1">
                   <button
                     type="button"
-                    onClick={() => alert('Password reset link sent.')}
+                    onClick={resetPassword}
                     className="text-xs font-semibold text-[#008272] hover:text-[#006357]"
                   >
                     Forgot password?
@@ -129,11 +221,7 @@ export default function AuthModalOrPage({
             </div>
 
             <button
-              onClick={() =>
-                handleSubmit({
-                  preventDefault: () => {}
-                })
-              }
+              onClick={googleSignIn}
               className="w-full bg-white hover:bg-slate-50 border border-slate-300 rounded-xl py-2.5 px-4 flex items-center justify-center gap-2.5 text-xs font-bold text-slate-700 transition-colors shadow-sm"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -158,9 +246,9 @@ export default function AuthModalOrPage({
             </button>
 
             <div className="text-center text-xs text-slate-500 pt-2">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <button
-                onClick={() => setMode('signup')}
+                onClick={() => setMode("signup")}
                 className="font-bold text-[#008272] hover:text-[#006357]"
               >
                 Create account
@@ -181,13 +269,17 @@ export default function AuthModalOrPage({
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-800">Full name</label>
+                <label className="text-xs font-bold text-slate-800">
+                  Full name
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                     <User className="w-4 h-4" />
                   </div>
                   <input
                     type="text"
+                    required
+                    maxLength={100}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Your name"
@@ -197,13 +289,16 @@ export default function AuthModalOrPage({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-800">Email</label>
+                <label className="text-xs font-bold text-slate-800">
+                  Email
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                     <Mail className="w-4 h-4" />
                   </div>
                   <input
                     type="email"
+                    required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
@@ -214,13 +309,15 @@ export default function AuthModalOrPage({
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-800">Password</label>
+                  <label className="text-xs font-bold text-slate-800">
+                    Password
+                  </label>
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="text-xs font-semibold text-slate-500 hover:text-slate-800"
                   >
-                    {showPassword ? 'Hide' : 'Show'}
+                    {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
                 <div className="relative">
@@ -228,7 +325,9 @@ export default function AuthModalOrPage({
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
+                    required
+                    minLength={8}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a password"
@@ -245,28 +344,30 @@ export default function AuthModalOrPage({
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => setUserIntent('need_help')}
+                    onClick={() => setUserIntent("need_help")}
                     className={`p-3.5 rounded-xl border text-left transition-all ${
-                      userIntent === 'need_help'
-                        ? 'border-[#008272] bg-[#e6f7f5] ring-1 ring-[#008272]'
-                        : 'border-slate-200 hover:bg-slate-50'
+                      userIntent === "need_help"
+                        ? "border-[#008272] bg-[#e6f7f5] ring-1 ring-[#008272]"
+                        : "border-slate-200 hover:bg-slate-50"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <Home className="w-5 h-5 text-slate-800" />
                       <span
                         className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
-                          userIntent === 'need_help'
-                            ? 'border-[#008272] bg-[#008272]'
-                            : 'border-slate-300'
+                          userIntent === "need_help"
+                            ? "border-[#008272] bg-[#008272]"
+                            : "border-slate-300"
                         }`}
                       >
-                        {userIntent === 'need_help' && (
+                        {userIntent === "need_help" && (
                           <div className="w-1.5 h-1.5 rounded-full bg-white" />
                         )}
                       </span>
                     </div>
-                    <div className="text-xs font-bold text-slate-900">Need help</div>
+                    <div className="text-xs font-bold text-slate-900">
+                      Need help
+                    </div>
                     <div className="text-[10px] text-slate-500 leading-tight mt-0.5">
                       Post jobs and find trusted workers
                     </div>
@@ -274,28 +375,30 @@ export default function AuthModalOrPage({
 
                   <button
                     type="button"
-                    onClick={() => setUserIntent('find_work')}
+                    onClick={() => setUserIntent("find_work")}
                     className={`p-3.5 rounded-xl border text-left transition-all ${
-                      userIntent === 'find_work'
-                        ? 'border-[#008272] bg-[#e6f7f5] ring-1 ring-[#008272]'
-                        : 'border-slate-200 hover:bg-slate-50'
+                      userIntent === "find_work"
+                        ? "border-[#008272] bg-[#e6f7f5] ring-1 ring-[#008272]"
+                        : "border-slate-200 hover:bg-slate-50"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <Briefcase className="w-5 h-5 text-slate-800" />
                       <span
                         className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
-                          userIntent === 'find_work'
-                            ? 'border-[#008272] bg-[#008272]'
-                            : 'border-slate-300'
+                          userIntent === "find_work"
+                            ? "border-[#008272] bg-[#008272]"
+                            : "border-slate-300"
                         }`}
                       >
-                        {userIntent === 'find_work' && (
+                        {userIntent === "find_work" && (
                           <div className="w-1.5 h-1.5 rounded-full bg-white" />
                         )}
                       </span>
                     </div>
-                    <div className="text-xs font-bold text-slate-900">Find work</div>
+                    <div className="text-xs font-bold text-slate-900">
+                      Find work
+                    </div>
                     <div className="text-[10px] text-slate-500 leading-tight mt-0.5">
                       Offer your skills and get jobs
                     </div>
@@ -315,9 +418,9 @@ export default function AuthModalOrPage({
             </form>
 
             <div className="text-center text-xs text-slate-500 pt-2">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <button
-                onClick={() => setMode('signin')}
+                onClick={() => setMode("signin")}
                 className="font-bold text-[#008272] hover:text-[#006357]"
               >
                 Sign in
@@ -326,6 +429,6 @@ export default function AuthModalOrPage({
           </>
         )}
       </div>
-    </div>
+    </fieldset>
   );
 }
