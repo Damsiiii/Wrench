@@ -3,3 +3,7 @@ dist
 .vite
 Wrench_UI_References/
 Wrench_UI_References
+
+.env
+.env.*
+!.env.example

@@ -8,20 +8,20 @@ import {
   Megaphone,
   ChevronDown
 } from 'lucide-react';
-import { TOWNS, INITIAL_WORKERS } from '../data/mockData';
+import { TOWNS } from '../data/mockData';
 
 export default function WorkerDirectoryPage({
-  onSelectWorker,
+  workers = [], onSelectWorker,
   onOpenPostJob
 }) {
-  const [selectedTown, setSelectedTown] = useState('Kurunegala');
+  const [selectedTown, setSelectedTown] = useState('All');
   const [selectedTrade, setSelectedTrade] = useState('All trades');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('highest_rated');
 
-  const filteredWorkers = INITIAL_WORKERS.filter((worker) => {
+  const filteredWorkers = workers.filter((worker) => {
     if (selectedTown !== 'All' && worker.town !== selectedTown) {
-      if (!searchQuery) return false;
+      return false;
     }
     if (selectedTrade !== 'All trades') {
       if (!worker.trade.toLowerCase().includes(selectedTrade.toLowerCase())) return false;
@@ -34,7 +34,7 @@ export default function WorkerDirectoryPage({
       if (!matchName && !matchTrade && !matchDesc) return false;
     }
     return true;
-  });
+  }).sort((a,b)=>sortBy==='highest_rated'?b.rating-a.rating:b.reviewsCount-a.reviewsCount);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

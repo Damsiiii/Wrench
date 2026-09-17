@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 export default function CustomerDashboard({
-  jobs,
+  jobs, onCancelJob,
   onSelectJob,
   onOpenPostJob,
   onCompareQuotes,
@@ -32,7 +32,7 @@ export default function CustomerDashboard({
     activeTab === 'open' ? openJobs : activeTab === 'in_progress' ? inProgressJobs : completedJobs;
 
   // Upcoming visit (first in-progress job or mock upcoming)
-  const upcomingJob = inProgressJobs[0] || jobs[1];
+  const upcomingJob = inProgressJobs[0];
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -100,7 +100,7 @@ export default function CustomerDashboard({
             </div>
           ) : (
             currentList.map((job) => {
-              const quoteCount = job.quotes?.length || 0;
+              const quoteCount = job.quotes?.filter(q=>q.status==='pending').length || 0;
               return (
                 <div
                   key={job.id}
@@ -172,6 +172,7 @@ export default function CustomerDashboard({
                       </div>
                     </div>
 
+                    {job.status==='open'&&<button className="text-xs text-red-700" onClick={()=>onCancelJob(job)}>Cancel job</button>}
                     {/* Action Button */}
                     {job.status === 'open' && (
                       <button
@@ -230,11 +231,11 @@ export default function CustomerDashboard({
               <div className="space-y-2 text-xs text-slate-700 pt-1">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-slate-400" />
-                  <span>Wed, 18 Sep 2026</span>
+                  <span>{upcomingJob.hiredQuote?.appointmentDate}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-slate-400" />
-                  <span>9:00 AM – 11:00 AM</span>
+                  <span>{upcomingJob.hiredQuote?.appointmentTime}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-slate-400" />
@@ -244,15 +245,12 @@ export default function CustomerDashboard({
                   <User className="w-4 h-4 text-slate-400" />
                   <div>
                     <span className="font-bold text-slate-900">
-                      {upcomingJob.hiredQuote?.workerName || 'Nimal Perera'}
+                      {upcomingJob.hiredQuote?.workerName || 'Worker'}
                     </span>
                     <span className="text-slate-500 block text-[11px]">Assigned worker</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-[#008272] font-bold">
-                  <Phone className="w-4 h-4" />
-                  <span>{upcomingJob.hiredQuote?.workerPhone || '076 123 4567'}</span>
-                </div>
+
               </div>
 
               <div className="pt-3 border-t border-slate-100">

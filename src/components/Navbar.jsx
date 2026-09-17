@@ -52,88 +52,13 @@ export default function Navbar({
   onOpenSignIn,
   currentUser,
   jobCount = 0,
-  unreadMessagesCount = 1
+  unreadMessagesCount = 0
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [lang, setLang] = useState('EN');
-  const [quickJumpOpen, setQuickJumpOpen] = useState(false);
-
-  const screens = [
-    { id: 'home', label: '01 Home' },
-    { id: 'find_work', label: '02 Find Work' },
-    { id: 'job_details', label: '03 Job Details' },
-    { id: 'post_job', label: '04 Post a Job' },
-    { id: 'send_quote', label: '05 Send a Quote' },
-    { id: 'compare_quotes', label: '06 Compare Quotes' },
-    { id: 'customer_dashboard', label: '07 Customer Dashboard' },
-    { id: 'worker_dashboard', label: '08 Worker Dashboard' },
-    { id: 'manage_hired_job', label: '09 Manage Hired Job & Review' },
-    { id: 'worker_directory', label: '10 Worker Directory' },
-    { id: 'worker_profile', label: '11 Worker Profile' },
-    { id: 'auth', label: '12 Sign In & Create Account' },
-    { id: 'worker_setup', label: '13 Worker Profile Setup' },
-    { id: 'messages', label: '14 Messages' },
-    { id: 'settings_help', label: '15 Account Settings & Help' }
-  ];
-
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
-      {/* Top Banner / Quick Jump Bar for testing all reference designs */}
-      <div className="bg-slate-900 text-slate-300 text-xs px-4 py-1.5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="bg-[#008272] text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
-            REFERENCE UI
-          </span>
-          <span className="hidden md:inline text-slate-300 text-[11px]">
-            Mode:{' '}
-            <strong className="text-white capitalize">
-              {userRole === 'customer' ? 'Customer (Kasun Perera)' : 'Worker (Saman Kumara)'}
-            </strong>
-          </span>
-          <button
-            onClick={() => setUserRole(userRole === 'customer' ? 'worker' : 'customer')}
-            className="text-[11px] underline text-teal-300 hover:text-white font-medium"
-          >
-            Switch to {userRole === 'customer' ? 'Worker' : 'Customer'} Mode
-          </button>
-        </div>
-
-        {/* Quick Screen Selector */}
-        <div className="relative">
-          <button
-            onClick={() => setQuickJumpOpen(!quickJumpOpen)}
-            className="flex items-center gap-1.5 text-slate-200 hover:text-white font-medium text-[11px] bg-slate-800 px-2 py-0.5 rounded border border-slate-700"
-          >
-            <Layers className="w-3.5 h-3.5 text-teal-400" />
-            <span>Jump to UI Screen ({screens.find((s) => s.id === activeTab)?.label || 'Menu'})</span>
-            <ChevronDown className="w-3 h-3" />
-          </button>
-
-          {quickJumpOpen && (
-            <div className="absolute right-0 mt-1 w-64 bg-white text-slate-900 rounded-lg shadow-xl border border-slate-200 py-2 z-50 max-h-96 overflow-y-auto">
-              <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                15 Reference UI Boards
-              </div>
-              {screens.map((screen) => (
-                <button
-                  key={screen.id}
-                  onClick={() => {
-                    setActiveTab(screen.id);
-                    setQuickJumpOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between hover:bg-teal-50 hover:text-[#008272] ${
-                    activeTab === screen.id ? 'font-bold text-[#008272] bg-teal-50' : 'text-slate-700'
-                  }`}
-                >
-                  <span>{screen.label}</span>
-                  {activeTab === screen.id && <Check className="w-3.5 h-3.5 text-[#008272]" />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
+      {currentUser && <div className="bg-teal-50 px-4 py-2 text-sm flex justify-between"><span>{currentUser.name}</span><button onClick={()=>setUserRole(userRole==='customer'?'worker':'customer')}>Switch to {userRole==='customer'?'worker':'customer'} view</button></div>}
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">

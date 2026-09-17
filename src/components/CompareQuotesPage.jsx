@@ -17,7 +17,7 @@ export default function CompareQuotesPage({
   onOpenMessages,
   onEditJob
 }) {
-  const quotes = job.quotes || [];
+  const quotes = job.quotes?.filter(q => q.status === 'pending') || [];
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -101,7 +101,7 @@ export default function CompareQuotesPage({
                 {/* Actions Row */}
                 <div className="flex flex-wrap items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
                   <button
-                    onClick={() => onViewWorkerProfile(quote.workerId || 'w-1')}
+                    onClick={() => onViewWorkerProfile(quote.workerId)}
                     className="bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl border border-slate-300 transition-colors"
                   >
                     View profile
@@ -115,7 +115,7 @@ export default function CompareQuotesPage({
                   </button>
 
                   <button
-                    onClick={() => onChooseWorker(job.id, quote)}
+                    disabled={job.status!=='open'} onClick={() => onChooseWorker(job.id, quote)}
                     className="bg-[#008272] hover:bg-[#007163] text-white text-xs sm:text-sm font-bold px-5 py-2 rounded-xl transition-colors shadow-sm"
                   >
                     Choose worker
@@ -133,7 +133,7 @@ export default function CompareQuotesPage({
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-slate-900">Your job</h3>
               <button
-                onClick={onEditJob}
+                disabled={quotes.length>0} title={quotes.length?'Jobs with quotes cannot be edited. Cancel and repost instead.':'Edit job'} onClick={onEditJob}
                 className="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1 border border-slate-200 px-2.5 py-1 rounded-lg"
               >
                 <Edit2 className="w-3 h-3" />

@@ -16,7 +16,7 @@ import {
 import { TOWNS, FAQS } from '../data/mockData';
 
 export default function AccountSettingsAndHelpPage({
-  currentUser,
+  currentUser, onSave,
   onNavigateToWorkerSetup,
   onSignOut
 }) {
@@ -25,15 +25,15 @@ export default function AccountSettingsAndHelpPage({
   const [openFaq, setOpenFaq] = useState('faq-1');
 
   // Form State
-  const [fullName, setFullName] = useState(currentUser?.name || 'Kasun Perera');
-  const [email, setEmail] = useState('kasun.p******@gmail.com');
-  const [town, setTown] = useState('Kurunegala');
-  const [preferredLang, setPreferredLang] = useState('Sinhala');
+  const [fullName, setFullName] = useState(currentUser?.name || '');
+  const [email, setEmail] = useState(currentUser.email || '');
+  const [town, setTown] = useState(currentUser.town || 'Kurunegala');
+  const [preferredLang, setPreferredLang] = useState(currentUser.language || 'English');
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  const handleSaveSettings = (e) => {
+  const handleSaveSettings = async (e) => {
     e.preventDefault();
-    setSavedSuccess(true);
+    setSavedSuccess(Boolean(await onSave({name:fullName,town,language:preferredLang})));
     setTimeout(() => setSavedSuccess(false), 3000);
   };
 
@@ -50,7 +50,7 @@ export default function AccountSettingsAndHelpPage({
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            15A. Account settings
+            Account settings
           </button>
           <button
             onClick={() => setActiveSection('how_it_works')}
@@ -60,7 +60,7 @@ export default function AccountSettingsAndHelpPage({
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            15B. How WRENCH works
+            How WRENCH works
           </button>
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function AccountSettingsAndHelpPage({
                 <label className="text-xs font-bold text-slate-800">Full name</label>
                 <input
                   type="text"
-                  value={fullName}
+                  id="account-name" value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-[#008272] focus:outline-none"
                 />
@@ -180,7 +180,7 @@ export default function AccountSettingsAndHelpPage({
                 </div>
 
                 <button
-                  onClick={() => alert('Customer profile editor opened.')}
+                  onClick={() => document.getElementById('account-name')?.focus()}
                   className="w-full bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold py-2 px-3 rounded-xl border border-slate-300 transition-colors"
                 >
                   Edit profile
@@ -328,11 +328,11 @@ export default function AccountSettingsAndHelpPage({
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-slate-900">Frequently asked questions</h2>
               <button
-                onClick={() => alert('Support contacted.')}
+                disabled title="Support contact is not configured yet"
                 className="bg-white hover:bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 flex items-center gap-1.5 shadow-sm"
               >
                 <Headphones className="w-3.5 h-3.5 text-slate-600" />
-                <span>Contact support</span>
+                <span>Support coming soon</span>
               </button>
             </div>
 

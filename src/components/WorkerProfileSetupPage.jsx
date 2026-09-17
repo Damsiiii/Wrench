@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Upload,
   MapPin,
@@ -10,41 +10,42 @@ import {
   Phone,
   Info,
   ArrowRight,
-  Camera
-} from 'lucide-react';
-import { TOWNS } from '../data/mockData';
+  Camera,
+} from "lucide-react";
+import { Photos } from "./BackendForms";
+import { TOWNS } from "../data/mockData";
 
-export default function WorkerProfileSetupPage({ onSave }) {
-  const [displayName, setDisplayName] = useState('Saman Kumara');
-  const [trade, setTrade] = useState('Plumbing');
-  const [town, setTown] = useState('Kurunegala');
-  const [serviceAreas, setServiceAreas] = useState([
-    'Kurunegala',
-    'Polgahawela',
-    'Mawathagama'
-  ]);
-  const [newAreaInput, setNewAreaInput] = useState('');
+export default function WorkerProfileSetupPage({
+  onSave,
+  currentUser,
+  profile,
+}) {
+  const [displayName, setDisplayName] = useState(currentUser.name || "");
+  const [trade, setTrade] = useState(profile?.trade || "Plumbing");
+  const [town, setTown] = useState(currentUser.town || "Kurunegala");
+  const [serviceAreas, setServiceAreas] = useState(profile?.serviceAreas || []);
+  const [newAreaInput, setNewAreaInput] = useState("");
   const [showAddArea, setShowAddArea] = useState(false);
-  const [about, setAbout] = useState(
-    'Reliable plumber with experience in home plumbing repairs, pipe leaks, new installations and maintenance.'
+  const [about, setAbout] = useState(profile?.about || "");
+  const [experience, setExperience] = useState(
+    profile?.experience || "Less than 1 year",
   );
-  const [experience, setExperience] = useState('5 - 10 years');
-  const [languages, setLanguages] = useState({
-    Sinhala: true,
-    Tamil: true,
-    English: true
-  });
-  const [phone, setPhone] = useState('077 123 4567');
-  const [workPhotos, setWorkPhotos] = useState([
-    'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80',
-    'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=400&q=80',
-    'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=400&q=80'
-  ]);
+  const [languages, setLanguages] = useState(
+    Object.fromEntries(
+      ["Sinhala", "Tamil", "English"].map((l) => [
+        l,
+        profile?.languages?.includes(l) || false,
+      ]),
+    ),
+  );
+  const [phone, setPhone] = useState(currentUser.phone || "");
+  const [workPhotos, setWorkPhotos] = useState(profile?.workPhotos || []);
+  const [avatar, setAvatar] = useState(currentUser.avatar || "");
 
   const handleAddArea = () => {
     if (newAreaInput.trim() && !serviceAreas.includes(newAreaInput.trim())) {
       setServiceAreas([...serviceAreas, newAreaInput.trim()]);
-      setNewAreaInput('');
+      setNewAreaInput("");
       setShowAddArea(false);
     }
   };
@@ -61,6 +62,7 @@ export default function WorkerProfileSetupPage({ onSave }) {
     e.preventDefault();
     if (onSave) {
       onSave({
+        avatar,
         displayName,
         trade,
         town,
@@ -69,7 +71,7 @@ export default function WorkerProfileSetupPage({ onSave }) {
         experience,
         languages: Object.keys(languages).filter((k) => languages[k]),
         phone,
-        workPhotos
+        workPhotos,
       });
     }
   };
@@ -82,7 +84,8 @@ export default function WorkerProfileSetupPage({ onSave }) {
           Become a worker
         </h1>
         <p className="text-slate-600 text-sm sm:text-base">
-          Create your profile and start getting job requests from people near you.
+          Create your profile and start getting job requests from people near
+          you.
         </p>
       </div>
 
@@ -103,28 +106,29 @@ export default function WorkerProfileSetupPage({ onSave }) {
           {/* Profile Photo & Display Name */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-800">Profile photo</label>
+              <label className="text-xs font-bold text-slate-800">
+                Profile photo
+              </label>
               <div className="flex items-center gap-4">
                 <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+                  src={avatar || `${import.meta.env.BASE_URL}wrench.svg`}
                   alt="Profile"
                   className="w-16 h-16 rounded-full object-cover border border-slate-200"
                 />
                 <div>
-                  <button
-                    type="button"
-                    className="bg-white hover:bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 flex items-center gap-1.5 shadow-sm"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Upload photo</span>
-                  </button>
-                  <p className="text-[10px] text-slate-400 mt-1">JPG or PNG. Max 5 MB.</p>
+                  <Photos
+                    value={avatar ? [avatar] : []}
+                    onChange={(urls) => setAvatar(urls.at(-1) || "")}
+                    max={1}
+                  />
                 </div>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-800">Display name</label>
+              <label className="text-xs font-bold text-slate-800">
+                Display name
+              </label>
               <input
                 type="text"
                 value={displayName}
@@ -137,7 +141,9 @@ export default function WorkerProfileSetupPage({ onSave }) {
           {/* Trade & Town */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-800">Main trade / service</label>
+              <label className="text-xs font-bold text-slate-800">
+                Main trade / service
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-600">
                   <Wrench className="w-4 h-4" />
@@ -186,7 +192,9 @@ export default function WorkerProfileSetupPage({ onSave }) {
 
           {/* Nearby Service Areas */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-800">Nearby service areas</label>
+            <label className="text-xs font-bold text-slate-800">
+              Nearby service areas
+            </label>
             <div className="flex flex-wrap items-center gap-2 p-2 border border-slate-300 rounded-xl min-h-[46px]">
               {serviceAreas.map((area) => (
                 <span
@@ -240,8 +248,12 @@ export default function WorkerProfileSetupPage({ onSave }) {
           {/* About You */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-800">About you</label>
-              <span className="text-[11px] text-slate-400">{about.length}/300</span>
+              <label className="text-xs font-bold text-slate-800">
+                About you
+              </label>
+              <span className="text-[11px] text-slate-400">
+                {about.length}/300
+              </span>
             </div>
             <textarea
               rows={3}
@@ -271,9 +283,11 @@ export default function WorkerProfileSetupPage({ onSave }) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-800">Languages</label>
+              <label className="text-xs font-bold text-slate-800">
+                Languages
+              </label>
               <div className="flex items-center gap-4 pt-2">
-                {['Sinhala', 'Tamil', 'English'].map((lang) => (
+                {["Sinhala", "Tamil", "English"].map((lang) => (
                   <label
                     key={lang}
                     className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 cursor-pointer select-none"
@@ -299,38 +313,7 @@ export default function WorkerProfileSetupPage({ onSave }) {
               <label className="text-xs font-bold text-slate-800">
                 Work photos (optional, up to 3)
               </label>
-              <div className="flex flex-wrap gap-2">
-                {workPhotos.map((url, idx) => (
-                  <div
-                    key={idx}
-                    className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200"
-                  >
-                    <img src={url} alt="Work" className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => handleRemovePhoto(idx)}
-                      className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5"
-                    >
-                      <X className="w-2.5 h-2.5" />
-                    </button>
-                  </div>
-                ))}
-                {workPhotos.length < 3 && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setWorkPhotos([
-                        ...workPhotos,
-                        'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80'
-                      ])
-                    }
-                    className="w-16 h-16 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center text-slate-400 hover:text-[#008272] text-[10px]"
-                  >
-                    <Camera className="w-4 h-4" />
-                    <span>Add photo</span>
-                  </button>
-                )}
-              </div>
+              <Photos value={workPhotos} onChange={setWorkPhotos} />
             </div>
 
             <div className="space-y-1.5">
@@ -367,20 +350,26 @@ export default function WorkerProfileSetupPage({ onSave }) {
         {/* Right Column: Profile Preview (Mint Background) */}
         <div className="bg-[#e6f7f5] border border-[#cbf0ea] rounded-2xl p-6 space-y-4 shadow-sm">
           <div>
-            <h3 className="text-base font-bold text-slate-900">Profile preview</h3>
-            <p className="text-xs text-slate-600">This is how customers may see you on WRENCH.</p>
+            <h3 className="text-base font-bold text-slate-900">
+              Profile preview
+            </h3>
+            <p className="text-xs text-slate-600">
+              This is how customers may see you on WRENCH.
+            </p>
           </div>
 
           {/* Preview Card */}
           <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
             <div className="flex items-center gap-3">
               <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+                src={avatar || `${import.meta.env.BASE_URL}wrench.svg`}
                 alt="Avatar"
                 className="w-16 h-16 rounded-full object-cover border border-slate-200"
               />
               <div className="space-y-0.5">
-                <h4 className="text-base font-bold text-slate-900">{displayName}</h4>
+                <h4 className="text-base font-bold text-slate-900">
+                  {displayName}
+                </h4>
                 <div className="flex items-center gap-1 text-xs text-slate-600">
                   <Wrench className="w-3.5 h-3.5 text-slate-400" />
                   <span>{trade}</span>
@@ -417,7 +406,7 @@ export default function WorkerProfileSetupPage({ onSave }) {
               <div className="text-slate-400 font-medium">Service areas</div>
               <div className="flex items-center gap-1 text-slate-700 mt-0.5">
                 <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                <span>{serviceAreas.join(', ')}</span>
+                <span>{serviceAreas.join(", ")}</span>
               </div>
             </div>
 
@@ -451,8 +440,8 @@ export default function WorkerProfileSetupPage({ onSave }) {
             <div className="pt-3 border-t border-slate-100 flex items-start gap-2 text-[10px] text-slate-500">
               <Info className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
               <span>
-                Your contact number is kept private and will only be shared when a customer contacts
-                you through WRENCH.
+                Your contact number is kept private and will only be shared when
+                a customer contacts you through WRENCH.
               </span>
             </div>
           </div>
